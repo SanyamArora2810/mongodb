@@ -1,0 +1,67 @@
+const mongoose = require("mongoose");
+
+uri="mongodb+srv://Sanyamarora:Sanyam@100@cluster0.1lwhncc.mongodb.net/Cluster0?retryWrites=true&w=majority";
+
+const connectDB=() => {
+    // console.log("connect db");
+    return mongoose.connect(uri,{
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
+    
+};
+
+module.exports = connectDB;
+
+
+const express=require("express");
+const app = express();
+const connectDB=require("./db/connect");
+
+const PORT=process.env.PORT || 5000;
+
+const products_routes=require("./routes/products");
+
+app.get("/",(req,res)=>{
+    res.send("Hi,I am live");
+
+});
+
+app.use("/api/products",products_routes);
+
+const start=async()=>{
+    try{
+        await connectDB(); 
+        app.listener(PORT,()=>{
+            console.log('${PORT} Yes I am connected');
+        });
+    } catch(error){
+        console.log(error);
+    }
+};
+
+
+const getAllProducts=async(req,res)=>{
+    res.status(200).json({msg:"I am getAllProducts"});
+};
+
+const getAllProductsTesting=async(req,res)=>{
+    res.status(200).json({msg: "I am getAllProductsTesting"});
+};
+
+module.exports={getAllProducts,getAllProductsTesting};
+
+
+
+const express=require("express");
+const router=express.Router();
+
+const{
+    getAllProducts,
+    getAllProductsTesting,
+}= require("../controllers/products");
+
+router.route("/").get(getAllProducts);
+router.route("/testing").get(getAllProductsTesting);
+
+module.exports=router;
